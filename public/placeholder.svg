@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f5f5f5"/>
+      <stop offset="100%" stop-color="#e9ebee"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#g)"/>
+  <g fill="#c1c7cd" opacity="0.8">
+    <circle cx="120" cy="160" r="56"/>
+    <rect x="60" y="260" width="480" height="24" rx="12"/>
+    <rect x="60" y="300" width="420" height="20" rx="10"/>
+  </g>
+  <g fill="#9aa4ad" opacity="0.6">
+    <rect x="60" y="560" width="200" height="12" rx="6"/>
+    <rect x="60" y="580" width="280" height="12" rx="6"/>
+  </g>
+  <text x="50%" y="95%" text-anchor="middle" fill="#aab3bb" font-size="18" font-family="Arial, sans-serif">No Image</text>
+</svg>
+
+
