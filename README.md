@@ -94,45 +94,6 @@ HTTP 客户端：Axios
     └── Iframe 嵌入式交互
 
 
-## 📁 项目结构
-
-```
-src/
-├── api/                      # API接口层
-│   ├── messageWallApi.ts    # 留言墙API
-│   ├── scenicController.ts  # 景点API
-│   └── ...
-├── components/              # 公共组件
-│   ├── GlobalHeader.vue
-│   ├── GlobalSider.vue
-│   └── DigitalHumanIframe.vue
-├── composables/             # 可复用逻辑
-│   ├── useMessageWall.ts
-│   ├── useChatStream.ts
-│   └── useAutoScroll.ts
-├── constants/               # 常量配置
-│   └── index.ts
-├── layouts/                 # 布局组件
-│   └── BasicLayout.vue
-├── pages/                   # 页面组件
-│   ├── user/               # 用户端
-│   ├── admin/              # 管理端
-│   └── merchant/           # 商家端
-├── router/                  # 路由配置
-│   └── index.ts
-├── stores/                  # 状态管理
-│   └── useLoginUserStore.ts
-├── types/                   # 类型定义
-│   ├── messageWall.ts
-│   └── chat.ts
-├── utils/                   # 工具函数
-│   ├── errorHandler.ts
-│   ├── logger.ts
-│   └── timeUtils.ts
-├── App.vue
-└── main.ts
-```
-
 ## 🚀 快速开始
 
 ### 环境要求
