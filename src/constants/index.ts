@@ -134,12 +134,12 @@ export const STORAGE_KEYS = {
 export const ROUTES = {
   /** 首页 */
   HOME: '/',
+  /** 登录（统一入口） */
+  LOGIN: '/user/login',
   /** 用户登录 */
   USER_LOGIN: '/user/login',
   /** 用户注册 */
   USER_REGISTER: '/user/register',
-  /** 商家登录 */
-  MERCHANT_LOGIN: '/merchant/login',
   /** 管理员用户管理 */
   ADMIN_USER_MANAGE: '/admin/userManage',
   /** 商家商品管理 */

@@ -114,6 +114,20 @@ const merchantMenuItems = [
   },
 ]
 
+// 商家业务菜单（管理员可见，但不包括设置）
+const merchantBusinessMenuItems = [
+  {
+    key: '/merchant/products',
+    label: '商品查看',
+    icon: () => h(AppstoreOutlined),
+  },
+  {
+    key: '/merchant/orders',
+    label: '订单查看',
+    icon: () => h(UnorderedListOutlined),
+  },
+]
+
 // 管理员专用菜单项
 const adminMenuItems = [
   {
@@ -147,13 +161,13 @@ const menuItems = computed(() => {
   
   // 根据角色添加不同的菜单
   if (userRole === 'merchant') {
-    // 商家：只显示通用菜单 + 商家管理菜单（不显示购物车、我的订单等用户端菜单）
+    // 商家：通用菜单 + 商家管理菜单（包括设置）
     items = [...items, ...merchantMenuItems]
   } else if (userRole === 'admin') {
-    // 管理员：显示通用菜单 + 用户端菜单 + 商家菜单 + 管理菜单
-    items = [...items, ...userMenuItems, ...merchantMenuItems, ...adminMenuItems]
+    // 管理员：通用菜单 + 用户端菜单 + 商家业务菜单（不含设置）+ 管理菜单
+    items = [...items, ...userMenuItems, ...merchantBusinessMenuItems, ...adminMenuItems]
   } else {
-    // 普通用户：显示通用菜单 + 用户端菜单
+    // 普通用户：通用菜单 + 用户端菜单
     items = [...items, ...userMenuItems]
   }
   

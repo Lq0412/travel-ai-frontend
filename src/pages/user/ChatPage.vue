@@ -12,39 +12,64 @@
       class="sidebar"
     />
 
-    <!-- 主内容区域 -->
+    <!-- 聊天卡片 -->
     <div class="chat-main" :class="{ 'sidebar-open': showSidebar }">
-      <div class="chat-header">
-        <button @click="showSidebar = !showSidebar" class="menu-btn">☰</button>
-        <h2>旅行助手</h2>
-        <button @click="handleNew" class="new-chat-btn">新对话</button>
+      <div class="chat-content">
+        <!-- 头部 -->
+        <div class="chat-header">
+        <button @click="showSidebar = !showSidebar" class="menu-btn glass-btn" aria-label="菜单">
+          <img src="https://unpkg.com/lucide-static@latest/icons/menu.svg" alt="菜单" class="icon" />
+        </button>
+        
+        <div class="header-title">
+          <img src="https://unpkg.com/lucide-static@latest/icons/sparkles.svg" alt="" class="title-icon" />
+          <h2>AI 旅行助手</h2>
+          <span class="status-badge" :class="{ active: !isLoading }">
+            <span class="status-dot"></span>
+            {{ isLoading ? '思考中' : '在线' }}
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <button @click="handleNew" class="action-btn glass-btn" title="新对话">
+            <img src="https://unpkg.com/lucide-static@latest/icons/plus-circle.svg" alt="新对话" class="icon" />
+            <span class="btn-label">新对话</span>
+          </button>
+        </div>
       </div>
 
-      <ChatWindow ref="windowRef" @update:loading="(v) => (isLoading = v)" />
+        <ChatWindow ref="windowRef" @update:loading="(v) => (isLoading = v)" />
 
-      <ChatInput :disabled="isLoading" placeholder="随便问我什么..." @send-message="onSend" />
-    </div>
-
-    <!-- 数字人按钮（固定在输入框上方） -->
-    <div class="digital-human-button-area">
-      <button 
-        @click="toggleDigitalHuman" 
-        class="digital-human-toggle-btn"
-        :class="{ active: showDigitalHuman }"
-        title="数字人助手"
-      >
-        <span class="btn-icon">🤖</span>
-        <span class="btn-text">{{ showDigitalHuman ? '关闭数字人' : '打开数字人' }}</span>
-      </button>
+        <ChatInput :disabled="isLoading" placeholder="随便问我什么..." @send-message="onSend" />
+      </div>
+      
+      <!-- 数字人悬浮按钮 -->
+      <transition name="scale-fade">
+        <div v-if="!showDigitalHuman" class="digital-human-fab">
+          <button 
+            @click="toggleDigitalHuman" 
+            class="fab-button"
+            title="数字人助手"
+          >
+            <img src="https://unpkg.com/lucide-static@latest/icons/bot.svg" alt="数字人" class="icon" />
+            <span class="fab-ripple"></span>
+          </button>
+        </div>
+      </transition>
     </div>
 
     <!-- 数字人全屏面板 -->
-    <transition name="fade">
+    <transition name="modal-fade">
       <div v-if="showDigitalHuman" class="digital-human-overlay" @click.self="toggleDigitalHuman">
-        <div class="digital-human-panel">
+        <div class="digital-human-panel" @click.stop>
           <div class="digital-human-header">
-            <h3>数字人助手</h3>
-            <button @click="toggleDigitalHuman" class="close-digital-human-btn" title="关闭">×</button>
+            <div class="header-left">
+              <img src="https://unpkg.com/lucide-static@latest/icons/bot.svg" alt="" class="header-icon" />
+              <h3>数字人助手</h3>
+            </div>
+            <button @click="toggleDigitalHuman" class="close-btn" title="关闭">
+              <img src="https://unpkg.com/lucide-static@latest/icons/x.svg" alt="关闭" class="icon" />
+            </button>
           </div>
           <div class="digital-human-content">
             <DigitalHumanIframe
@@ -224,115 +249,398 @@ function onDigitalHumanLoaded() {
 
 
 <style scoped>
+/* 页面容器 */
 .helper-page {
   display: flex;
   flex-direction: row;
-  height: 100%;
-  min-height: 0;
+  height: calc(100vh - 128px);
+  min-height: calc(100vh - 128px);
   overflow: hidden;
   position: relative;
+  background: #f8f9fa;
 }
 
+@supports (height: 100dvh) {
+  .helper-page {
+    height: calc(100dvh - 128px);
+    min-height: calc(100dvh - 128px);
+  }
+}
+
+/* 侧边栏 */
 .sidebar {
   position: relative;
   z-index: 10;
 }
 
+/* 聊天卡片 */
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
+  max-width: 1400px;
+  width: calc(100% - 32px);
+  height: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  min-height: 0;
   position: relative;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 卡片内容区 */
+.chat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  min-height: 0;
+}
+
+/* 头部 */
 .chat-header {
-  padding: 16px;
-  border-bottom: 1px solid #e1e5e9;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
-  background-color: white;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
   z-index: 5;
+  position: relative;
+  flex-shrink: 0;
 }
 
-.menu-btn, .new-chat-btn {
-  background: none;
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  border-radius: 6px;
+/* 按钮 */
+.glass-btn {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 16px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.menu-btn:hover, .new-chat-btn:hover {
-  background-color: #f8f9fa;
-}
-
-.chat-header h2 {
-  margin: 0;
-  flex: 1;
-  font-size: 18px;
-  color: #333;
-}
-
-/* 数字人按钮区域 */
-.digital-human-button-area {
-  position: fixed;
-  bottom: 100px; /* 在输入框上方，根据输入框高度调整 */
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 20px;
-  background-color: rgba(255, 255, 255, 0.98);
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1001; /* 确保在输入框(z-index:1000)之上 */
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.digital-human-toggle-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  min-width: 160px;
-  justify-content: center;
 }
 
-.digital-human-toggle-btn:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+.glass-btn:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
   transform: translateY(-1px);
 }
 
-.digital-human-toggle-btn.active {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+.glass-btn:active {
+  transform: translateY(0);
 }
 
-.digital-human-toggle-btn .btn-icon {
-  font-size: 18px;
-  line-height: 1;
+.glass-btn .icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) saturate(100%) invert(39%) sepia(57%) saturate(2878%) hue-rotate(211deg) brightness(95%) contrast(101%);
 }
 
-.digital-human-toggle-btn .btn-text {
-  white-space: nowrap;
+/* 头部标题区 */
+.header-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(221deg) brightness(98%) contrast(101%);
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 状态徽章 */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.status-badge.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* 头部操作按钮 */
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.btn-label {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .btn-label {
+    display: none;
+  }
+}
+
+/* 数字人悬浮按钮 */
+.digital-human-fab {
+  position: absolute;
+  bottom: 100px;
+  right: 32px;
+  z-index: 1000;
+}
+
+.fab-button {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.fab-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+.fab-button:active {
+  transform: translateY(-2px) scale(1);
+}
+
+.fab-button .icon {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) saturate(100%) invert(100%);
+  z-index: 2;
+  position: relative;
+}
+
+.fab-ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: ripple 2s ease-out infinite;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* 数字人全屏遮罩层 */
+.digital-human-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+/* 数字人面板 */
+.digital-human-panel {
+  width: 100%;
+  max-width: 1400px;
+  height: 100%;
+  max-height: 90vh;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.digital-human-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.9) 100%);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(221deg) brightness(98%) contrast(101%);
+}
+
+.digital-human-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: rotate(90deg);
+}
+
+.close-btn .icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(25%) sepia(93%) saturate(4661%) hue-rotate(344deg) brightness(91%) contrast(91%);
+}
+
+.digital-human-content {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+}
+
+.digital-human-content > * {
+  width: 100%;
+  height: 100%;
+}
+
+/* 过渡动画 */
+.scale-fade-enter-active,
+.scale-fade-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scale-fade-enter-from,
+.scale-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-fade-enter-active .digital-human-panel,
+.modal-fade-leave-active .digital-human-panel {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-fade-enter-from {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .digital-human-panel {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+}
+
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-leave-to .digital-human-panel {
+  transform: scale(0.95) translateY(10px);
+  opacity: 0;
 }
 
 /* 移动端响应式 */
@@ -347,138 +655,37 @@ function onDigitalHumanLoaded() {
     top: 0;
     bottom: 0;
     z-index: 100;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .chat-main {
+    margin: 0 auto;
+    width: calc(100% - 32px);
+    border-radius: 12px;
   }
 
   .chat-main.sidebar-open {
-    transform: translateX(300px);
+    transform: translateX(280px);
   }
 
-  .chat-main.digital-human-open {
-    margin-right: 400px;
+  .chat-header {
+    padding: 16px;
   }
-}
 
-/* 数字人全屏遮罩层 */
-.digital-human-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+  .header-title h2 {
+    font-size: 16px;
+  }
 
-/* 数字人面板 */
-.digital-human-panel {
-  width: 100%;
-  max-width: 1200px;
-  height: 100%;
-  max-height: 90vh;
-  background-color: #fff;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
+  .digital-human-fab {
+    bottom: 90px;
+    right: 20px;
+  }
 
-.digital-human-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #e1e5e9;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f8f9fa;
-  flex-shrink: 0;
-}
+  .fab-button {
+    width: 56px;
+    height: 56px;
+  }
 
-.digital-human-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.digital-human-header h3::before {
-  content: '🤖';
-  font-size: 24px;
-}
-
-.close-digital-human-btn {
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  color: #666;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: all 0.2s;
-  font-weight: 300;
-  line-height: 1;
-}
-
-.close-digital-human-btn:hover {
-  background-color: #e9ecef;
-  color: #333;
-}
-
-.digital-human-content {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  background-color: #f0f0f0;
-}
-
-.digital-human-content > * {
-  width: 100%;
-  height: 100%;
-}
-
-/* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-active .digital-human-panel,
-.fade-leave-active .digital-human-panel {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.fade-enter-from {
-  opacity: 0;
-}
-
-.fade-enter-from .digital-human-panel {
-  transform: scale(0.9);
-  opacity: 0;
-}
-
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-leave-to .digital-human-panel {
-  transform: scale(0.9);
-  opacity: 0;
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
   .digital-human-overlay {
     padding: 0;
   }

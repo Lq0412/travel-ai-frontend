@@ -1,14 +1,13 @@
 <template>
-  <!-- expose content left offset as a CSS variable -->
-  <div id="basicLayout" :style="{'--content-left': isAuthPage ? '0px' : (collapsed ? '80px' : '200px')}">
+  <!-- 后台管理布局 - 包含侧边栏和顶部栏 -->
+  <div id="basicLayout" :style="{'--content-left': collapsed ? '80px' : '200px'}">
     <a-layout style="min-height: 100vh">
-      <a-layout-header v-if="showHeader" class="header">
+      <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
 
       <a-layout>
         <GlobalSider
-          v-if="!isAuthPage"
           class="sider"
           :collapsed="collapsed"
           @toggle-collapse="toggleCollapse"
@@ -16,8 +15,8 @@
 
         <!-- Main Content -->
         <a-layout-content
-          :class="isAuthPage ? 'auth-content' : 'content'"
-          :style="{ marginLeft: isAuthPage ? '0' : collapsed ? '80px' : '200px' }"
+          class="content"
+          :style="{ marginLeft: collapsed ? '80px' : '200px' }"
         >
           <router-view :key="$route.fullPath" />
         </a-layout-content>
@@ -27,22 +26,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import GlobalSider from '@/components/GlobalSider.vue'
 
-const route = useRoute()
 const collapsed = ref(false)
-
-const showHeader = computed(() => {
-  return route.path === '/'
-})
-
-const isAuthPage = computed(() => {
-  const authRoutes = ['/user/login', '/user/register']
-  return authRoutes.includes(route.path)
-})
 
 const toggleCollapse = () => {
   collapsed.value = !collapsed.value
@@ -77,21 +65,12 @@ const toggleCollapse = () => {
 
 .content {
   position: relative;
-  z-index: 50; /* 从原来的210降低 */
+  z-index: 50;
   margin-left: var(--content-left);
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
 }
-
-/* Auth Page Specific Styles */
-.auth-content {
-  position: relative;
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-
-}
-
 
 /* Responsive Adjustments */
 @media (max-width: 992px) {

@@ -1,70 +1,41 @@
 <template>
   <div class="forum-page">
-    <div class="filter-container">
-      <!-- 搜索区域 -->
-      <div class="search-section">
-        <div class="search-row">
-          <div class="search-container">
-            <!-- 搜索框和重置按钮 -->
-            <a-input-search
-              v-model:value="searchParams.keyword"
-              placeholder="搜索帖子内容..."
-              enter-button="搜索"
-              size="large"
-              @search="handleSearch"
-              allow-clear
-              class="search-input"
-            />
-            <a-button @click="handleReset" size="large" class="reset-btn">
-              <template #icon><ReloadOutlined /></template>
-              重置
-            </a-button>
-
-            <!-- 标签筛选 -->
-            <div class="tag-filter-wrapper">
-              <a-select
-                v-model:value="searchParams.selectedTags"
-                mode="multiple"
-                placeholder="按标签筛选"
-                allow-clear
-                style="min-width: 200px"
-                :options="hotTagOptions"
-                @change="handleTagFilterChange"
-              />
-            </div>
-
-            <!-- 排序筛选 -->
-            <div class="sort-wrapper">
-              <a-dropdown-button
-                :loading="filterLoading"
-                @click="handleFilterClick"
-                class="sort-dropdown"
-              >
-                {{ getSortLabel(searchParams.sortField) }}
-                <template #overlay>
-                  <a-menu @click="handleSortMenuClick">
-                    <a-menu-item
-                      v-for="sortOption in sortOptions"
-                      :key="sortOption.value"
-                      :class="{ active: searchParams.sortField === sortOption.value }"
-                    >
-                      <span>{{ sortOption.label }}</span>
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-                <template #icon><DownOutlined /></template>
-              </a-dropdown-button>
-            </div>
-          </div>
-          <!-- 发布按钮 -->
-          <div class="toolbar">
-            <a-button type="primary" @click="showCreate = true">发布帖子</a-button>
-          </div>
+    <!-- 优化后的顶部区域 -->
+    <div class="forum-header">
+      <!-- 搜索和发布行 -->
+      <div class="search-publish-row">
+        <div class="search-container">
+          <a-input-search
+            v-model:value="searchParams.keyword"
+            placeholder="搜索帖子内容..."
+            enter-button="搜索"
+            size="large"
+            @search="handleSearch"
+            allow-clear
+            class="main-search-input"
+          />
+          
+          <!-- 排序选择 -->
+          <a-select
+            v-model:value="searchParams.sortField"
+            :options="sortOptions"
+            @change="handleSortChange"
+            class="sort-select"
+          >
+            <template #suffixIcon>
+              <img src="https://unpkg.com/lucide-static@latest/icons/arrow-down-up.svg" class="sort-icon" alt="sort">
+            </template>
+          </a-select>
         </div>
+        
+        <a-button type="primary" @click="showCreate = true" class="publish-btn">
+          <img src="https://unpkg.com/lucide-static@latest/icons/edit.svg" class="btn-icon" alt="edit">
+          <span class="btn-text">发布帖子</span>
+        </a-button>
       </div>
-    </div>
-
-    <div class="header-container">
+      
+      
+      <!-- 分类标签 -->
       <div class="category-tabs-wrapper">
         <a-tabs
           v-model:activeKey="searchParams.categoryId"
@@ -87,7 +58,10 @@
         <div class="post-image" @click="openDetail(item)">
           <img :src="item.coverUrl || defaultCover" alt="cover" />
           <div class="image-overlay">
-            <div class="view-count">👁 {{ item.viewCount || 0 }}</div>
+            <div class="view-count">
+              <img src="https://unpkg.com/lucide-static@latest/icons/eye.svg" class="count-icon" alt="view">
+              {{ item.viewCount || 0 }}
+            </div>
           </div>
         </div>
 
@@ -130,7 +104,9 @@
               @click.stop="toggleLike(item)"
               :class="{ liked: item.id && likeMap[item.id] }"
             >
-              <template #icon>👍</template>
+              <template #icon>
+                <img src="https://unpkg.com/lucide-static@latest/icons/thumbs-up.svg" class="like-icon" alt="like">
+              </template>
               <span class="like-count">{{ item.likeCount || 0 }}</span>
             </a-button>
           </div>
@@ -356,7 +332,9 @@
                 @click="toggleLike(detailPost)"
                 :loading="likeLoading"
               >
-                <template #icon>👍</template>
+                <template #icon>
+                  <img src="https://unpkg.com/lucide-static@latest/icons/thumbs-up.svg" class="action-icon" alt="like">
+                </template>
                 {{ detailPost.id && likeMap[detailPost.id] ? '已点赞' : '点赞' }} ({{
                   detailPost.likeCount || 0
                 }})
@@ -367,7 +345,9 @@
                 @click="toggleFavorite(detailPost)"
                 :loading="favoriteLoading"
               >
-                <template #icon>⭐</template>
+                <template #icon>
+                  <img src="https://unpkg.com/lucide-static@latest/icons/star.svg" class="action-icon" alt="favorite">
+                </template>
                 {{ detailPost.id && favoriteMap[detailPost.id] ? '已收藏' : '收藏' }}
               </a-button>
             </div>
@@ -377,7 +357,7 @@
           <div class="modal-comment-section">
             <div class="modal-comment-header">
               <h3 class="modal-comment-title">
-                <span class="comment-icon">💬</span>
+                <img src="https://unpkg.com/lucide-static@latest/icons/message-circle.svg" class="comment-icon" alt="comment">
                 评论区 ({{ modalCommentList.length }})
               </h3>
               <a-button
@@ -387,7 +367,9 @@
                 :loading="commentRefreshing"
                 class="refresh-btn"
               >
-                <template #icon>🔄</template>
+                <template #icon>
+                  <img src="https://unpkg.com/lucide-static@latest/icons/refresh-cw.svg" class="refresh-icon" alt="refresh">
+                </template>
                 刷新
               </a-button>
             </div>
@@ -422,7 +404,9 @@
                   :disabled="!modalNewComment.trim()"
                   class="submit-btn"
                 >
-                  <template #icon>📝</template>
+                  <template #icon>
+                    <img src="https://unpkg.com/lucide-static@latest/icons/send.svg" class="send-icon" alt="send">
+                  </template>
                   发表评论
                 </a-button>
               </div>
@@ -525,6 +509,8 @@ const hotTagOptions = ref<{ label: string; value: string }[]>([])
 // 标签名称到ID的映射
 const tagNameToIdMap = ref<Record<string, number>>({})
 
+// 移除不需要的状态
+
 // 搜索参数
 const searchParams = reactive({
   keyword: '',
@@ -532,6 +518,8 @@ const searchParams = reactive({
   categoryId: '',
   selectedTags: [] as string[],
 })
+
+// 移除不需要的计算属性
 
 // 排序选项
 const sortOptions = [
@@ -901,6 +889,9 @@ async function handleSortChange(sortField: string) {
   query.current = 1
   await fetchPosts()
 }
+
+// 移除单个标签
+// 移除不需要的函数
 
 // 筛选按钮点击
 function handleFilterClick() {
@@ -1452,40 +1443,165 @@ const getModalContainer = () => {
 
 .forum-page {
   padding: 16px;
+  animation: fadeIn 0.6s ease;
 }
 
-/* 搜索区域样式 */
-.search-section {
-  background: white;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-bottom: 1rem;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 论坛顶部区域 */
+.forum-header {
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease;
+}
+
+/* 搜索和发布行 */
+.search-publish-row {
+  width: 60%;
+  max-width: 900px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-radius: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  }
+  
+  @supports not (backdrop-filter: blur(20px)) {
+    background: rgba(255, 255, 255, 0.95);
+  }
 }
 
 .search-container {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+}
+
+.main-search-input {
   flex: 1;
+  
+  :deep(.ant-input-search) {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 18px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+    
+    &:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+    }
+  }
+  
+  :deep(.ant-input) {
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    
+    &::placeholder {
+      color: #a0aec0;
+    }
+  }
+  
+  :deep(.ant-input-search-button) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 0 15px 15px 0;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    }
+  }
 }
 
-.toolbar {
-  flex-shrink: 0; /* 防止被压缩 */
+.sort-select {
+  width: 100px;
+  
+  :deep(.ant-select-selector) {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    height: 40px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: rgba(102, 126, 234, 0.3);
+      background: rgba(102, 126, 234, 0.05);
+    }
+  }
+  
+  :deep(.ant-select-focused .ant-select-selector) {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08) !important;
+    background: rgba(102, 126, 234, 0.05);
+  }
+  
+  :deep(.ant-select-selection-item) {
+    font-weight: 600;
+    color: #667eea;
+  }
+  
+  .sort-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
 }
 
-.search-input {
-  flex: 1;
-  max-width: 600px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  min-width: 200px; /* 最小宽度 */
+/* 发布按钮 */
+.publish-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+    transform: translateY(-2px);
+  }
 }
 
-.search-input:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
+/* 移除不需要的筛选相关样式 */
 
 .reset-btn {
   flex-shrink: 0; /* 防止按钮被压缩 */
@@ -1498,8 +1614,19 @@ const getModalContainer = () => {
 .reset-btn {
   min-width: 100px;
   height: 40px;
-  border-radius: 6px;
-  font-weight: 500;
+  border-radius: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  
+  &:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    color: #5568d3;
+  }
 }
 
 .search-row {
@@ -1520,10 +1647,34 @@ const getModalContainer = () => {
   flex-shrink: 0; /* 防止被压缩 */
 }
 
-.reset-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* 发布按钮渐变样式 */
+.publish-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 24px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+  }
 }
+
+
 
 /* 分类和筛选区域样式 */
 .filter-section {
@@ -1548,10 +1699,14 @@ const getModalContainer = () => {
   margin-bottom: 16px;
 }
 
-/* 分类标签页样式 */
+/* 分类标签页样式 - 玻璃拟态胶囊设计 */
 .category-tabs-wrapper {
   flex: 1;
   min-width: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 20px;
+  padding: 8px;
+  backdrop-filter: blur(10px);
 }
 
 .category-tabs {
@@ -1560,51 +1715,84 @@ const getModalContainer = () => {
 
 :deep(.ant-tabs-nav) {
   margin-bottom: 0;
+  
+  &::before {
+    border: none; /* 移除默认下边框 */
+  }
 }
 
 :deep(.ant-tabs-tab) {
-  padding: 12px 20px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-:deep(.ant-tabs-tab:hover) {
-  color: #1890ff;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 12px;
+  margin: 0 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: none;
+  color: #718096;
+  
+  &:hover {
+    color: #667eea;
+    background: rgba(255, 255, 255, 0.6);
+  }
 }
 
 :deep(.ant-tabs-tab-active) {
-  color: #1890ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  
+  .ant-tabs-tab-btn {
+    color: #fff !important;
+  }
 }
 
 :deep(.ant-tabs-ink-bar) {
-  background: #1890ff;
+  display: none; /* 隐藏默认指示器，使用渐变背景替代 */
 }
 
-/* 排序筛选样式 */
+/* 排序筛选样式 - 玻璃拟态按钮 */
 .sort-wrapper {
   flex-shrink: 0;
 }
 
 .sort-dropdown {
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  min-width: 120px;
+  border-radius: 12px;
+  min-width: 140px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  color: #667eea;
+  
+  &:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+    transform: translateY(-2px);
+    background: rgba(102, 126, 234, 0.05);
+  }
+  
+  :deep(.ant-btn-icon) {
+    filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(230deg) brightness(97%) contrast(90%);
+  }
 }
 
-.sort-dropdown:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
-}
-
-/* 菜单项活跃状态 */
+/* 菜单项活跃状态 - 渐变背景 */
 :deep(.ant-menu-item.active) {
-  background-color: #e6f7ff !important;
-  color: #1890ff !important;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%) !important;
+  color: #667eea !important;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 :deep(.ant-menu-item.active .ant-menu-item-icon) {
-  color: #1890ff !important;
+  color: #667eea !important;
+}
+
+:deep(.ant-menu-item:hover) {
+  background: rgba(102, 126, 234, 0.08) !important;
+  border-radius: 8px;
 }
 
 .row-actions {
@@ -1670,27 +1858,38 @@ const getModalContainer = () => {
   padding: 0 10px;
 }
 
-/* 帖子卡片 - 三段式布局 */
+/* 帖子卡片 - 玻璃拟态设计（复用仪表板风格） */
 .post-card {
-  background: #fff;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  will-change: transform;
+  contain: layout style paint;
+  
+  /* 玻璃拟态效果 */
+  @supports (backdrop-filter: blur(10px)) {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px) saturate(150%);
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+  }
 }
 
 .post-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translate3d(0, -8px, 0);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-/* 第一部分：图片区域 */
+/* 第一部分：图片区域 - 优化版 */
 .post-image {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  background: #f7f7f7;
+  background: linear-gradient(135deg, #f7f7f7 0%, #e8e8e8 100%);
   overflow: hidden;
 }
 
@@ -1698,28 +1897,48 @@ const getModalContainer = () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .post-card:hover .post-image img {
-  transform: scale(1.05);
+  transform: translate3d(0, 0, 0) scale(1.08);
 }
 
 .image-overlay {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 12px;
+  transition: background 0.3s ease;
+}
+
+.post-card:hover .image-overlay {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.6) 100%);
 }
 
 .view-count {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  
+  .count-icon {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0) invert(1);
+  }
 }
 
 /* 第二部分：内容描述 */
@@ -1753,26 +1972,38 @@ const getModalContainer = () => {
   overflow: hidden;
 }
 
-/* 帖子标签样式 */
+/* 帖子标签样式 - 渐变胶囊 */
 .post-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .post-tag {
   font-size: 12px;
-  border-radius: 12px;
-  padding: 2px 8px;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    transform: translateY(-2px);
+  }
 }
 
 .more-tags {
   font-size: 12px;
-  color: #999;
-  background: #f5f5f5;
-  padding: 2px 8px;
-  border-radius: 12px;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  font-weight: 600;
 }
 
 .post-stats {
@@ -1788,14 +2019,15 @@ const getModalContainer = () => {
   gap: 4px;
 }
 
-/* 第三部分：用户信息和点赞功能 */
+/* 第三部分：用户信息和点赞功能 - 优化版 */
 .post-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid #f0f0f0;
-  background: #fafafa;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(247, 247, 247, 0.5) 100%);
+  backdrop-filter: blur(5px);
 }
 
 .user-section {
@@ -1838,29 +2070,61 @@ const getModalContainer = () => {
 }
 
 .like-section .ant-btn {
-  padding: 4px 8px;
+  padding: 6px 12px;
   height: auto;
-  border: none;
-  background: transparent;
-  color: #999;
-  transition: all 0.2s ease;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .like-section .ant-btn:hover {
-  background: #f0f0f0;
-  color: #1890ff;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 .like-section .ant-btn.liked {
-  color: #ff4d4f;
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%);
+  border-color: #ff4d4f;
+  color: #fff;
+  
+  &:hover {
+    background: linear-gradient(135deg, #ff7875 0%, #ffa940 100%);
+  }
 }
 
 .like-count {
-  font-size: 12px;
-  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.like-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(230deg) brightness(97%) contrast(90%);
+  transition: all 0.3s ease;
+}
+
+.ant-btn.liked .like-icon {
+  filter: brightness(0) invert(1);
+  animation: likeAnimation 0.3s ease;
+}
+
+@keyframes likeAnimation {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
 }
 
 .pagination {
@@ -1874,6 +2138,15 @@ const getModalContainer = () => {
   top: 0 !important;
   transform: none !important;
   z-index: 3000 !important;
+}
+
+.detail-modal :deep(.ant-modal-content) {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.15);
 }
 
 .detail-modal :deep(.ant-modal-body) {
@@ -1942,12 +2215,14 @@ const getModalContainer = () => {
   overflow: hidden;
 }
 
-/* 帖子信息区域 */
+/* 帖子信息区域 - 玻璃拟态 */
 .modal-post-info {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .modal-post-title {
@@ -2038,31 +2313,49 @@ const getModalContainer = () => {
 }
 
 .modal-action-buttons .ant-btn {
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 18px;
-  font-weight: 500;
-  font-size: 13px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+  }
 }
 
 .modal-action-buttons .ant-btn.liked {
-  background: #ff4d4f;
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%);
   border-color: #ff4d4f;
   color: white;
+  
+  &:hover {
+    background: linear-gradient(135deg, #ff7875 0%, #ffa940 100%);
+  }
 }
 
 .modal-action-buttons .ant-btn.favorited {
-  background: #faad14;
+  background: linear-gradient(135deg, #faad14 0%, #ffc53d 100%);
   border-color: #faad14;
   color: white;
+  
+  &:hover {
+    background: linear-gradient(135deg, #ffc53d 0%, #ffd666 100%);
+  }
 }
 
-/* 评论区 */
+/* 评论区 - 玻璃拟态 */
 .modal-comment-section {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2087,20 +2380,49 @@ const getModalContainer = () => {
 }
 
 .comment-icon {
-  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(230deg) brightness(97%) contrast(90%);
+}
+
+.refresh-icon {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(230deg) brightness(97%) contrast(90%);
+}
+
+.send-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+}
+
+.action-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1);
 }
 
 .refresh-btn {
-  color: #1890ff;
-  font-size: 12px;
+  color: #667eea;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #5568d3;
+  }
 }
 
 .modal-comment-input {
   margin-bottom: 16px;
-  background: #fafafa;
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(250, 250, 250, 0.5) 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .comment-input-header {
@@ -2122,14 +2444,25 @@ const getModalContainer = () => {
 }
 
 .comment-textarea {
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
+  border: 2px solid transparent;
+  border-radius: 12px;
   transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  
+  &:hover {
+    border-color: rgba(102, 126, 234, 0.3);
+  }
+  
+  &:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
 }
 
 .comment-textarea.has-content {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .modal-comment-actions {
@@ -2144,8 +2477,18 @@ const getModalContainer = () => {
 }
 
 .submit-btn {
-  background: #1890ff;
-  border-color: #1890ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+  }
 }
 
 .modal-comment-list {
@@ -2176,9 +2519,11 @@ const getModalContainer = () => {
 .modal-comment-item {
   display: flex;
   gap: 12px;
-  padding: 16px 0;
-  border-bottom: 1px solid #f5f5f5;
-  transition: all 0.3s ease;
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 8px;
 }
 
 .modal-comment-item:last-child {
@@ -2186,10 +2531,9 @@ const getModalContainer = () => {
 }
 
 .modal-comment-item:hover {
-  background: #fafafa;
-  border-radius: 8px;
-  padding: 16px 8px;
-  margin: 0 -8px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
 }
 
 .modal-comment-item.new-comment {
@@ -2432,7 +2776,9 @@ const getModalContainer = () => {
   color: #999;
 }
 
-/* 响应式设计 */
+/* ======================== 响应式设计 ======================== */
+
+/* 大屏幕 */
 @media (max-width: 1300px) {
   .detail-modal-container {
     flex-direction: column;
@@ -2457,41 +2803,211 @@ const getModalContainer = () => {
   }
 }
 
-@media (max-width: 768px) {
-  .search-container {
+/* 平板 */
+@media (max-width: 968px) {
+  .search-publish-row {
+    width: 85%;
     flex-direction: column;
-    gap: 1rem;
+    padding: 16px;
+    gap: 12px;
   }
-
-  .search-input {
-    max-width: none;
+  
+  .search-container {
+    width: 100%;
   }
-
-  .category-tabs-wrapper {
-    order: 1;
+  
+  .sort-select {
+    width: 130px;
   }
-
-  .sort-wrapper {
-    order: 2;
-    display: flex;
+  
+  .publish-btn {
+    width: 100%;
     justify-content: center;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
   }
+  
+  .category-tabs-wrapper {
+    padding: 6px;
+    border-radius: 16px;
+  }
+  
+  :deep(.ant-tabs-tab) {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
 
+/* 手机 */
+@media (max-width: 768px) {
+  .forum-page {
+    padding: 12px;
+  }
+  
+  .forum-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-publish-row {
+    width: 95%;
+    padding: 12px;
+    border-radius: 16px;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+  
+  .main-search-input :deep(.ant-input) {
+    font-size: 14px;
+  }
+  
+  .sort-select {
+    width: 120px;
+    
+    :deep(.ant-select-selector) {
+      height: 36px;
+    }
+  }
+  
+  .publish-btn {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+    
+    .btn-icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  
+  /* 分类标签页滚动优化 */
   .category-tabs {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   :deep(.ant-tabs-nav) {
     overflow-x: auto;
     white-space: nowrap;
   }
+  
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0;
+  }
+  
+  .post-card {
+    border-radius: 16px;
+    
+    @supports (backdrop-filter: blur(10px)) {
+      backdrop-filter: blur(8px) saturate(130%);
+    }
+  }
+  
+  .post-content {
+    padding: 14px;
+  }
+  
+  .post-title {
+    font-size: 16px;
+  }
+  
+  .post-description {
+    font-size: 13px;
+  }
+  
+  .post-footer {
+    padding: 12px 14px;
+  }
 
+  /* Detail Modal */
   .modal-image-section {
-    height: 200px;
+    height: 220px;
   }
 
   .modal-post-title {
     font-size: 16px;
+  }
+  
+  .modal-post-info,
+  .modal-comment-section {
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
+
+/* 小手机 */
+@media (max-width: 576px) {
+  .search-publish-row {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .sort-select {
+    width: 110px;
+    
+    :deep(.ant-select-selector) {
+      height: 34px;
+    }
+    
+    :deep(.ant-select-selection-item) {
+      font-size: 13px;
+    }
+  }
+  
+  .publish-btn .btn-text {
+    display: none;
+  }
+  
+  .publish-btn {
+    width: auto;
+    padding: 0 12px;
+  }
+  
+  .category-tabs-wrapper {
+    padding: 4px;
+  }
+
+  :deep(.ant-tabs-tab) {
+    padding: 6px 10px;
+    font-size: 13px;
+    margin: 0 2px;
+  }
+
+  .post-card {
+    border-radius: 14px;
+  }
+
+  .post-image {
+    height: 180px;
+  }
+  
+  .post-title {
+    font-size: 15px;
+  }
+  
+  .post-description {
+    font-size: 13px;
+  }
+
+  .post-footer {
+    padding: 10px;
+  }
+
+  .like-section .ant-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+  }
+
+  .modal-comment-section {
+    max-height: 250px;
   }
 }
 

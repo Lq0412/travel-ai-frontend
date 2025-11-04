@@ -143,21 +143,51 @@ watch(isLoading, (v) => emit('update:loading', !!v), { immediate: true })
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  background: transparent;
 }
+
 .messages {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 16px 16px 140px;
+  padding: 24px;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
 }
+
+/* 自定义滚动条 */
+.messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 4px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.3);
+}
+
 .empty-hint {
   height: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  color: #888;
-  font-size: 18px;
+  color: #9ca3af;
+  font-size: 16px;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  margin: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 </style>
