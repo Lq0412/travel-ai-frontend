@@ -97,36 +97,36 @@ HTTP 客户端：Axios
 
 ```
 src/
-├── api/                    # API接口层
-│   ├── messageWallApi.ts  # 留言墙API (统一封装)
+├── api/                      # API接口层
+│   ├── messageWallApi.ts    # 留言墙API
+│   ├── scenicController.ts  # 景点API
 │   └── ...
-├── components/            # 公共组件
+├── components/              # 公共组件
 │   ├── GlobalHeader.vue
 │   ├── GlobalSider.vue
 │   └── DigitalHumanIframe.vue
-├── composables/           # 可复用逻辑
-│   ├── useMessageWall.ts  # 留言墙Composable
+├── composables/             # 可复用逻辑
+│   ├── useMessageWall.ts
 │   ├── useChatStream.ts
 │   └── useAutoScroll.ts
-├── constants/             # 常量配置
-│   └── index.ts           # 统一常量管理
-├── layouts/               # 布局组件
-│   └── BasicLayout.vue
-├── pages/                 # 页面组件
-│   ├── user/             # 用户端页面
-│   ├── admin/            # 管理端页面
-│   ├── merchant/         # 商家端页面
-│   └── ...
-├── router/               # 路由配置
+├── constants/               # 常量配置
 │   └── index.ts
-├── stores/               # 状态管理
+├── layouts/                 # 布局组件
+│   └── BasicLayout.vue
+├── pages/                   # 页面组件
+│   ├── user/               # 用户端
+│   ├── admin/              # 管理端
+│   └── merchant/           # 商家端
+├── router/                  # 路由配置
+│   └── index.ts
+├── stores/                  # 状态管理
 │   └── useLoginUserStore.ts
-├── types/                # TypeScript类型定义
+├── types/                   # 类型定义
 │   ├── messageWall.ts
 │   └── chat.ts
-├── utils/                # 工具函数
-│   ├── errorHandler.ts   # 统一错误处理
-│   ├── logger.ts         # 日志管理
+├── utils/                   # 工具函数
+│   ├── errorHandler.ts
+│   ├── logger.ts
 │   └── timeUtils.ts
 ├── App.vue
 └── main.ts
