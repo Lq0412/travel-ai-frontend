@@ -100,7 +100,7 @@ async function loadConversations() {
     })
 
     console.log('📥 会话列表响应:', response.data)
-    if (response.data.code === 200 && response.data.data) {
+    if ((response.data.code === 0 || response.data.code === 200) && response.data.data) {
       conversations.value = response.data.data.map((conv: any) => ({
         id: String(conv.id),
         title: conv.title || '新对话',
@@ -179,7 +179,7 @@ async function handleDelete(id: string | number) {
 
     console.log('删除会话响应:', response.data)
 
-    if (response.data.code === 200) {
+    if (response.data.code === 0 || response.data.code === 200) {
       // 删除成功，刷新会话列表
       await loadConversations()
 

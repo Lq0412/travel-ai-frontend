@@ -114,7 +114,7 @@ async function loadConversations() {
       pageSize: 50
     })
 
-    if (response.data.code === 200 && response.data.data) {
+    if ((response.data.code === 0 || response.data.code === 200) && response.data.data) {
       conversations.value = response.data.data.map((conv: any) => ({
         id: String(conv.id),
         title: conv.title || '新对话',
@@ -170,7 +170,7 @@ async function handleDelete(id: number) {
       userId: loginUserStore.loginUser.id
     })
 
-    if (response.data.code === 200) {
+    if (response.data.code === 0 || response.data.code === 200) {
       await loadConversations()
       if (String(id) === currentConversationId.value) {
         currentConversationId.value = null

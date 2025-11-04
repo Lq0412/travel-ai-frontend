@@ -93,7 +93,7 @@ async function loadConversationHistory(conversationId: string) {
     console.log('响应数据:', response.data.data)
     console.log('响应消息:', response.data.message)
 
-    if (response.data.code === 200 && response.data.data) {
+    if ((response.data.code === 0 || response.data.code === 200) && response.data.data) {
       // 清空当前消息
       messages.value = []
 
