@@ -100,7 +100,7 @@ HTTP 客户端：Axios
 
 - **Node.js >= 18.x** (推荐 20.x)
 - **npm >= 9.x** 或 **pnpm >= 8.x**
-- **后端服务**: 确保后端 API 服务已启动（默认 http://localhost:8080）
+- **后端服务**: 确保后端 API 服务已启动（默认 http://127.0.0.1:8080）
 
 ### 1. 克隆项目
 
@@ -129,10 +129,10 @@ cp .env.example .env.local
 
 ```env
 # API基础URL（后端服务地址）
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=http://127.0.0.1:8080/api
 
 # 数字人服务URL（可选）
-VITE_DIGITAL_HUMAN_URL=http://localhost:8888/static/MiniLive_RealTime.html
+VITE_DIGITAL_HUMAN_URL=http://127.0.0.1:8888/static/MiniLive_RealTime.html
 ```
 
 ### 4. 启动开发服务器
@@ -141,7 +141,7 @@ VITE_DIGITAL_HUMAN_URL=http://localhost:8888/static/MiniLive_RealTime.html
 npm run dev
 ```
 
-访问：http://localhost:5173
+访问：http://127.0.0.1:5173
 
 ### 5. 生产环境构建
 
@@ -169,15 +169,15 @@ npm run format
 
 ```env
 # API基础URL
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=http://127.0.0.1:8080/api
 
 # 数字人服务URL
-VITE_DIGITAL_HUMAN_URL=http://localhost:8888/static/MiniLive_RealTime.html
+VITE_DIGITAL_HUMAN_URL=http://127.0.0.1:8888/static/MiniLive_RealTime.html
 ```
 
 ### 后端接口
 
-默认后端API地址：`http://localhost:8080/api`
+默认后端API地址：`http://127.0.0.1:8080/api`
 
 > 确保后端服务已启动，详见后端项目README
 
@@ -270,7 +270,7 @@ server {
 
     # API 代理
     location /api/ {
-        proxy_pass http://localhost:8080/api/;
+        proxy_pass http://127.0.0.1:8080/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

@@ -73,7 +73,7 @@
           </div>
           <div class="digital-human-content">
             <DigitalHumanIframe
-              src="http://localhost:8888/static/MiniLive_RealTime.html"
+              src="http://127.0.0.1:8888/static/MiniLive_RealTime.html"
               @loaded="onDigitalHumanLoaded"
             />
           </div>

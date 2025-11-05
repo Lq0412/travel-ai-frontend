@@ -77,8 +77,8 @@ const loginUserStore = useLoginUserStore()
 
 // 数字人相关配置
 const useIframe = ref(true) // 默认使用 iframe 模式（更简单）
-const digitalHumanUrl = ref(`http://localhost:8888/static/MiniLive_RealTime.html?v=${Date.now()}`)
-const digitalHumanBaseUrl = ref('http://localhost:8888/static')
+const digitalHumanUrl = ref(`http://127.0.0.1:8888/static/MiniLive_RealTime.html?v=${Date.now()}`)
+const digitalHumanBaseUrl = ref('http://127.0.0.1:8888/static')
 const selectedCharacter = ref<'assets' | 'assets2' | 'assets3'>('assets')
 const selectedVoice = ref('0')
 

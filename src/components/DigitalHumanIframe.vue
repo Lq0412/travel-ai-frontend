@@ -21,7 +21,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  src: 'http://localhost:8888/static/MiniLive_RealTime.html',
+  src: 'http://127.0.0.1:8888/static/MiniLive_RealTime.html',
   autoResize: true
 })
 
@@ -36,7 +36,7 @@ const iframeRef = ref<HTMLIFrameElement | null>(null)
 
 const cacheBuster = ref(Date.now())
 const iframeSrc = computed(() => {
-  const baseUrl = props.src || 'http://localhost:8888/static/MiniLive_RealTime.html'
+  const baseUrl = props.src || 'http://127.0.0.1:8888/static/MiniLive_RealTime.html'
   try {
     const url = new URL(baseUrl)
     url.searchParams.set('v', String(cacheBuster.value))

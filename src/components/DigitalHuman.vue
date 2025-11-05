@@ -12,7 +12,7 @@
       v-if="showDialog"
       id="screen2"
       ref="dialogIframeRef"
-      src="http://localhost:8888/static/dialog_RealTime.html"
+      src="http://127.0.0.1:8888/static/dialog_RealTime.html"
       frameborder="0"
       style="display: none;"
     ></iframe>
@@ -65,7 +65,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  baseUrl: 'http://localhost:8888/static',
+  baseUrl: 'http://127.0.0.1:8888/static',
   showDialog: false,
   showControls: true,
   initialCharacter: 'assets',

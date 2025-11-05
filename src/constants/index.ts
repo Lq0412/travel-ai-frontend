@@ -257,7 +257,7 @@ export const PRODUCT_STATUS = {
  */
 export const DIGITAL_HUMAN = {
   /** 数字人服务URL */
-  SERVICE_URL: import.meta.env.VITE_DIGITAL_HUMAN_URL || 'http://localhost:8888/static/MiniLive_RealTime.html',
+  SERVICE_URL: import.meta.env.VITE_DIGITAL_HUMAN_URL || 'http://127.0.0.1:8888/static/MiniLive_RealTime.html',
 } as const
 
 /**
